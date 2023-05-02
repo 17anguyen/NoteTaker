@@ -32,13 +32,12 @@ app.get("/api/notes", (req, res) => {
 app.post("/api/notes", (req, res) => {
     fs.readFile(path.join("./db/db.json","utf-8",(err,data)) => {
         if (err) {
-            return console.log(err);
-        } else {
-            const addNote = JSON.parse(data);
+            return console.log(err),
+        }else{
+            const addNote = JSON.parse(data),
             const noteInput = {
                 title: req.body.title,
                 text: req.body.text,
-                // id: (Math.floor(Math.random() * 1000))
             }
             addNote.push(noteInput);
             fs.writeFile("./db/db.json",JSON.stringify(noteList,null,4),(err) => {
