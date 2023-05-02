@@ -4,6 +4,8 @@ const path = require("path");
 
 const PORT = process.env.PORT || 3001
 const app = express();
+
+
 //middleware
 app.use(express.urlencoded({
     extended: true
@@ -12,50 +14,72 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public/index.html"))
-})
+
 app.get("/notes", (req, res) => {
     res.sendFile(path.join(__dirname, "public/notes.html"));
 })
-
 app.get("/api/notes", (req, res) => {
     fs.readFile(path.join(__dirname, "/db/db.json"), "utf-8", (err, data) => {
-        if {
-            const notes = JSON.parse(data);
-            res.json(notes);
-            console.log("notes saved")
+        if (err) {
+            return console.log(err);
         } else {
-            return res.status(404).json("page not found")
+            const addNote = JSON.parse(data);
+            res.json(addNote);
         }
     })
 })
 
 app.post("/api/notes", (req, res) => {
-    fs.readFile(path.join(__dirname, "/db/db.json"), "utf-8", (err, data) => {
+    fs.readFile(path.join("./db/db.json","utf-8",(err,data)) => {
         if (err) {
-            res.status(404).json("page not found");
+            return console.log(err);
         } else {
             const addNote = JSON.parse(data);
             const noteInput = {
                 title: req.body.title,
                 text: req.body.text,
-                id: (Math.floor(Math.random() * 1000))
+                // id: (Math.floor(Math.random() * 1000))
             }
             addNote.push(noteInput);
-            fs.writeFile(path.join(__dirname, "/db/db.json"), JSON.stringify(addNote, null, 4), (err) => {
+            fs.writeFile("./db/db.json",JSON.stringify(noteList,null,4),(err) => {
                 if (err) {
-                    res.status(404).json("page not found");
+                    return console.log(err);
                 } else {
-                    res.json({
-                        msg: "Notes saved",
-                        note: noteInput
-                    })
+                   return res.json(noteInput);
                 }
             })
         }
     })
 })
+
+app.delete("/api/notes/:id", (req,res) => {
+    fs.readFile("./db/db.json","utf-8",(err,data)=>{
+        if (err) {
+            return console.log(err);
+        }else{
+            const noteList = JSON.parse(data);
+            const newNoteList = noteList.filter(note => note.id !== req.params.id);
+
+            fs.writeFile("./db/db.json",JSON.stringify(newNoteList,null,4),(err)=>{
+                if(err){
+                    return console.log(err);
+                }else{
+                    return res.json({msg:"Note has been deleted"});
+                }
+            })
+        }
+    })
+
+});
+
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/index.html"))
+})
+
+
+
+
 
 
 app.listen(PORT, () => {
