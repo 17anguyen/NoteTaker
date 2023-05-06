@@ -7,19 +7,20 @@ const app = express();
 
 
 //middleware
+app.use(express.json());
+
 app.use(express.urlencoded({
     extended: true
 }));
-app.use(express.json());
 
 app.use(express.static("public"));
 
 
 app.get("/notes", (req, res) => {
-    res.sendFile(path.join(__dirname, "public/notes.html"));
+    res.sendFile(path.join(__dirname, "/public/notes.html"));
 })
 app.get("/api/notes", (req, res) => {
-    fs.readFile(path.join(__dirname, "/db/db.json"), "utf-8", (err, data) => {
+    fs.readFile("./db/db.json", "utf-8", (err, data) => {
         if (err) {
             return console.log(err);
         } else {
@@ -27,15 +28,15 @@ app.get("/api/notes", (req, res) => {
             res.json(addNote);
         }
     })
-})
+});
 
 app.post("/api/notes", (req, res) => {
-    fs.readFile(path.join("./db/db.json","utf-8",(err,data)) => {
+    fs.readFile("./db/db.json","utf-8",(err,data) => {
         if (err) {
-            return console.log(err),
-        }else{
+            return console.log(err);
+        } else{
             const addNote = JSON.parse(data),
-            const noteInput = {
+            noteInput = {
                 title: req.body.title,
                 text: req.body.text,
             }
@@ -49,7 +50,7 @@ app.post("/api/notes", (req, res) => {
             })
         }
     })
-})
+});
 
 app.delete("/api/notes/:id", (req,res) => {
     fs.readFile("./db/db.json","utf-8",(err,data)=>{
