@@ -37,6 +37,7 @@ app.post("/api/notes", (req, res) => {
         } else{
             const addNote = JSON.parse(data),
             noteInput = {
+                id:uuid.v4(),
                 title: req.body.title,
                 text: req.body.text,
             }
@@ -58,13 +59,13 @@ app.delete("/api/notes/:id", (req,res) => {
             return console.log(err);
         }else{
             const noteList = JSON.parse(data);
-            const newNoteList = noteList.filter(note => note.id !== req.params.id);
+            const newNotes = noteList.filter(note => note.id !== req.params.id);
 
-            fs.writeFile("./db/db.json",JSON.stringify(newNoteList,null,4),(err)=>{
+            fs.writeFile("./db/db.json",JSON.stringify(newNotes,null,4),(err)=>{
                 if(err){
                     return console.log(err);
                 }else{
-                    return res.json({msg:"Note has been deleted"});
+                    return res.json({msg:"deleted"});
                 }
             })
         }
@@ -76,11 +77,6 @@ app.delete("/api/notes/:id", (req,res) => {
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public/index.html"))
 })
-
-
-
-
-
 
 app.listen(PORT, () => {
     console.log(`listening on port` + PORT);
